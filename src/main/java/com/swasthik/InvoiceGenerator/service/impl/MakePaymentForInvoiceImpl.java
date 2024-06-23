@@ -20,7 +20,6 @@ public class MakePaymentForInvoiceImpl implements MakePaymentForInvoice {
 
 	@Override
 	public UserInvoiceResponse makePayment(String id, MakePaymentRequest request) {
-		System.out.println();
 		Optional<CustomerInvoice> customerInvoice = userRepository.findById(Integer.parseInt(id));
 		CustomerInvoice Invoice = null;
 		UserInvoiceResponse response = null;

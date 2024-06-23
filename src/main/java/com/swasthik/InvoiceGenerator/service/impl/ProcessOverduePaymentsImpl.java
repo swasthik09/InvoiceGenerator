@@ -43,7 +43,10 @@ public class ProcessOverduePaymentsImpl implements ProcessOverduePayments {
 					customerInvoice.setStatus(InvoiceStatus.PAID);
 				}
 				userRepository.save(customerInvoice);
-				CreateInvoiceResponse userInvoiceResponse = createUserInvoiceService.createUserInvoice(customerRequest);
+				CreateInvoiceResponse userInvoiceResponse = null;
+				userInvoiceResponse = createUserInvoiceService.createUserInvoice(customerRequest);
+				userInvoiceResponse
+						.setResponseMessage("new Invoice Created with total amount" + customerRequest.getAmount());
 				Response.add(userInvoiceResponse);
 			}
 		}

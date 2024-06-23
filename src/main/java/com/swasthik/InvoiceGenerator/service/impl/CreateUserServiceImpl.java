@@ -11,21 +11,32 @@ import com.swasthik.InvoiceGenerator.service.CreateUserInvoiceService;
 import com.swasthik.InvoiceGenerator.repo.UserRepository;
 
 @Service
-public class CreateUserServiceImpl implements CreateUserInvoiceService{
+public class CreateUserServiceImpl implements CreateUserInvoiceService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Override
-	public CreateInvoiceResponse createUserInvoice(CustomerRequest req) {
-		CustomerInvoice customerInvoice = new CustomerInvoice();
-		customerInvoice.setAmount(req.getAmount());
-		customerInvoice.setDue_date(req.getDueDate());
-		customerInvoice.setPaid_amount(0.0);
-		customerInvoice.setStatus(InvoiceStatus.PENDING);
-		CustomerInvoice response = userRepository.save(customerInvoice);
+	public CreateInvoiceResponse createUserInvoice(CustomerRequest request) {
 		CreateInvoiceResponse createInvoiceResponse = new CreateInvoiceResponse();
-		createInvoiceResponse.setId(String.valueOf(response.getId()));
+		try {
+			if (request != null && request.getAmount() != null && request.getDueDate() != null) {
+				CustomerInvoice customerInvoice = new CustomerInvoice();
+				customerInvoice.setAmount(request.getAmount());
+				customerInvoice.setDue_date(request.getDueDate());
+				customerInvoice.setPaid_amount(0.0);
+				customerInvoice.setStatus(InvoiceStatus.PENDING);
+				CustomerInvoice response = userRepository.save(customerInvoice);
+				if (response != null && response.getId() != null) {
+					createInvoiceResponse = new CreateInvoiceResponse();
+					createInvoiceResponse.setId(String.valueOf(response.getId()));
+				}
+			} else {
+				createInvoiceResponse.setResponseMessage("Invalid request Param");
+			}
+		} catch (Exception e) {
+			createInvoiceResponse.setResponseMessage("Unexpected Error Please try after some time");
+		}
 		return createInvoiceResponse;
 	}
 

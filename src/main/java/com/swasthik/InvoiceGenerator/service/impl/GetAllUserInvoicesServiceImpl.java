@@ -19,16 +19,20 @@ public class GetAllUserInvoicesServiceImpl implements GetAllUserInvoices {
 
 	@Override
 	public List<UserInvoiceResponse> getAllUserInvoices() {
-		List<CustomerInvoice> invoices = userRepository.findAll();
 		List<UserInvoiceResponse> response = new ArrayList<>();
-		for (CustomerInvoice invoice : invoices) {
-			UserInvoiceResponse userInvoiceResponse = new UserInvoiceResponse();
-			userInvoiceResponse.setAmount(invoice.getAmount());
-			userInvoiceResponse.setDue_date(invoice.getDue_date());
-			userInvoiceResponse.setId(invoice.getId());
-			userInvoiceResponse.setPaid_amount(invoice.getPaid_amount());
-			userInvoiceResponse.setStatus(invoice.getStatus());
-			response.add(userInvoiceResponse);
+		try {
+			List<CustomerInvoice> invoices = userRepository.findAll();
+			for (CustomerInvoice invoice : invoices) {
+				UserInvoiceResponse userInvoiceResponse = new UserInvoiceResponse();
+				userInvoiceResponse.setAmount(invoice.getAmount());
+				userInvoiceResponse.setDue_date(invoice.getDue_date());
+				userInvoiceResponse.setId(invoice.getId());
+				userInvoiceResponse.setPaid_amount(invoice.getPaid_amount());
+				userInvoiceResponse.setStatus(invoice.getStatus());
+				response.add(userInvoiceResponse);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return response;
 	}

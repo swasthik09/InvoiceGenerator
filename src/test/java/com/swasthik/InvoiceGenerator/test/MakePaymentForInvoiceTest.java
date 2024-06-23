@@ -1,7 +1,14 @@
 package com.swasthik.InvoiceGenerator.test;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,44 +24,42 @@ import com.swasthik.InvoiceGenerator.model.UserInvoiceResponse;
 import com.swasthik.InvoiceGenerator.repo.UserRepository;
 import com.swasthik.InvoiceGenerator.service.impl.MakePaymentForInvoiceImpl;
 
-import java.util.Optional;
-
 @ExtendWith(MockitoExtension.class)
 public class MakePaymentForInvoiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+	@Mock
+	private UserRepository userRepository;
 
-    @InjectMocks
-    private MakePaymentForInvoiceImpl makePaymentInvoiceService;
+	@InjectMocks
+	private MakePaymentForInvoiceImpl makePaymentInvoiceService;
 
+	private CustomerInvoice customerInvoice;
 
-    private CustomerInvoice customerInvoice; 
-    
-    private  MakePaymentRequest makePaymentRequest;
+	private MakePaymentRequest makePaymentRequest;
 
-    @BeforeEach
-    public void setUp() {
-        customerInvoice = new CustomerInvoice();
-        customerInvoice.setId(1L);
-        customerInvoice.setAmount(100.0);
-        customerInvoice.setPaid_amount(50.0);
-        customerInvoice.setStatus(InvoiceStatus.PENDING);
+	/**
+	 * this method creates mock data sets to test service before the testing
+	 */
+	@BeforeEach
+	public void setUp() {
+		customerInvoice = new CustomerInvoice();
+		customerInvoice.setId(1L);
+		customerInvoice.setAmount(100.0);
+		customerInvoice.setPaid_amount(50.0);
+		customerInvoice.setStatus(InvoiceStatus.PENDING);
 
-        makePaymentRequest = new MakePaymentRequest();
-        makePaymentRequest.setAmount(50.0);
-    }
+		makePaymentRequest = new MakePaymentRequest();
+		makePaymentRequest.setAmount(50.0);
+	}
 
-    @Test
+	/**
+	 * test scenario when Invoice is fully paid
+	 */
+	@Test
     public void testMakePayment_PaidInFull() {
-        // Given
         when(userRepository.findById(1)).thenReturn(Optional.of(customerInvoice));
         makePaymentRequest.setAmount(50.0); 
-
-        // When
         UserInvoiceResponse response = makePaymentInvoiceService.makePayment("1", makePaymentRequest);
-
-        // Then
         verify(userRepository, times(1)).findById(1);
         verify(userRepository, times(1)).save(any(CustomerInvoice.class));
         assertEquals(InvoiceStatus.PAID, response.getStatus());
@@ -62,36 +67,31 @@ public class MakePaymentForInvoiceTest {
         assertEquals(100.0, response.getPaid_amount());
     }
 
-    @Test
+	/**
+	 * test scenario when Invoice is not found
+	 */
+	@Test
     public void testMakePayment_InvoiceNotFound() {
-        // Given
         when(userRepository.findById(1)).thenReturn(Optional.empty());
-
-        // When
         UserInvoiceResponse response = makePaymentInvoiceService.makePayment("1", makePaymentRequest);
-
-        // Then
         verify(userRepository, times(1)).findById(1);
         verify(userRepository, times(0)).save(any(CustomerInvoice.class));
         assertNull(response);
     }
-    
-    @Test
+
+	/**
+	 * test scenario when Invoice is partially paid
+	 */
+	@Test
     public void testMakePayment_PartialPayment() {
-        // Given
         when(userRepository.findById(1)).thenReturn(Optional.of(customerInvoice));
         makePaymentRequest.setAmount(25.0);	
-
-        // When
         UserInvoiceResponse response = makePaymentInvoiceService.makePayment("1", makePaymentRequest);
-
-        // Then
         verify(userRepository, times(1)).findById(1);
         verify(userRepository, times(1)).save(any(CustomerInvoice.class));
         assertEquals(InvoiceStatus.PENDING, response.getStatus());
         assertEquals(100.0, response.getAmount());
         assertNotEquals(100.0, response.getPaid_amount());
     }
-	 
-}
 
+}
