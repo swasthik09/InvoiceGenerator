@@ -23,31 +23,27 @@ public class MakePaymentForInvoiceImpl implements MakePaymentForInvoice {
 		System.out.println();
 		Optional<CustomerInvoice> customerInvoice = userRepository.findById(Integer.parseInt(id));
 		CustomerInvoice Invoice = null;
-		UserInvoiceResponse response = new UserInvoiceResponse();
+		UserInvoiceResponse response = null;
 		InvoiceStatus status = null;
-		if (customerInvoice.isPresent()) {
+		if (customerInvoice.isPresent()
+				&& customerInvoice.get().getAmount() != customerInvoice.get().getPaid_amount()) {
 			Invoice = customerInvoice.get();
-			if (Invoice != null && Invoice.getPaid_amount() == request.getAmount()) {
+			double total = Invoice.getAmount();
+			double alreadyGiven = Invoice.getPaid_amount() + request.getAmount();
+			if (alreadyGiven == total) {
 				status = InvoiceStatus.PAID;
 			} else {
-				double total = Invoice.getAmount();
-				double alreadyGiven = Invoice.getPaid_amount() + request.getAmount();
-				if (alreadyGiven == total) {
-					status = InvoiceStatus.PAID;
-				} else {
-					status = InvoiceStatus.PENDING;
-				}
-				Invoice.setStatus(status);
-				Invoice.setPaid_amount(alreadyGiven);
-				userRepository.save(Invoice);
+				status = InvoiceStatus.PENDING;
 			}
+			Invoice.setStatus(status);
+			Invoice.setPaid_amount(alreadyGiven);
+			userRepository.save(Invoice);
+			response = new UserInvoiceResponse();
 			response.setAmount(Invoice.getAmount());
 			response.setDue_date(Invoice.getDue_date());
 			response.setId(Invoice.getId());
 			response.setPaid_amount(Invoice.getPaid_amount());
 			response.setStatus(status);
-		} else {
-
 		}
 		return response;
 	}
