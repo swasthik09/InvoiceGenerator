@@ -23,7 +23,7 @@ import com.swasthik.InvoiceGenerator.model.InvoiceStatus;
 import com.swasthik.InvoiceGenerator.model.MakePaymentRequest;
 import com.swasthik.InvoiceGenerator.model.UserInvoiceResponse;
 import com.swasthik.InvoiceGenerator.repo.UserRepository;
-import com.swasthik.InvoiceGenerator.service.impl.CreateUserServiceImpl;
+import com.swasthik.InvoiceGenerator.service.impl.CreateUserInvoiceServiceImpl;
 import com.swasthik.InvoiceGenerator.service.impl.GetAllUserInvoicesServiceImpl;
 
 
@@ -34,7 +34,7 @@ class createGetInvoicesTests {
 	private UserRepository userRepository;
 
 	@InjectMocks
-	private CreateUserServiceImpl invoiceService;
+	private CreateUserInvoiceServiceImpl invoiceService;
 
 	private CustomerRequest customerRequest;
 

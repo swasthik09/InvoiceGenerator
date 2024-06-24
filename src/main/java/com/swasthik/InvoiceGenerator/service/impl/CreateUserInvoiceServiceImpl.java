@@ -11,7 +11,7 @@ import com.swasthik.InvoiceGenerator.service.CreateUserInvoiceService;
 import com.swasthik.InvoiceGenerator.repo.UserRepository;
 
 @Service
-public class CreateUserServiceImpl implements CreateUserInvoiceService {
+public class CreateUserInvoiceServiceImpl implements CreateUserInvoiceService {
 
 	@Autowired
 	private UserRepository userRepository;
